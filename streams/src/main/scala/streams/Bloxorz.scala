@@ -46,4 +46,19 @@ object Bloxorz extends App {
   }
 
   println(Level1.solution)
+
+  /**
+    * Level 1 of the official Bloxorz game
+    */
+  object UnsolvableLevel extends Level {
+    val level =
+      """ooo-------
+        |oSoooo----
+        |----------
+        |-ooooooooo
+        |-----ooToo
+        |------ooo-""".stripMargin
+  }
+
+  println(UnsolvableLevel.solution)
 }
