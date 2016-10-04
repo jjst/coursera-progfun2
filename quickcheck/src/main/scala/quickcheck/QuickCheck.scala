@@ -40,4 +40,20 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
       val meldedMin = Try(findMin(meld(heap1, heap2))).toOption
       meldedMin == min
   }
+
+  property("heap in which element is inserted should not be empty") = forAll { (heap: H, elem: Int) =>
+    !isEmpty(insert(elem, heap))
+  }
+
+  property("constantly finding and deleting the minima should give sorted list") = forAll { heap: H =>
+    def popAll(heap: H): List[A] = {
+      if(isEmpty(heap)) {
+        Nil
+      } else {
+        findMin(heap) :: popAll(deleteMin(heap))
+      }
+    }
+    val elems = popAll(heap)
+    elems == elems.sorted
+  }
 }
