@@ -5,6 +5,8 @@ import org.scalacheck.Gen._
 import org.scalacheck.Prop._
 import org.scalacheck._
 
+import scala.util.Try
+
 abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
 
   lazy val genEmptyHeap: Gen[H] = const(empty)
@@ -34,9 +36,8 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
   }
 
   property("finding the minimum of 2 merged heaps should return the minimum of one of them") = forAll { (heap1: H, heap2: H) =>
-      val min1 = findMin(heap1)
-      val min2 = findMin(heap2)
-      val meldedMin = findMin(meld(heap1, heap2))
-      meldedMin == min1 || meldedMin == min2
+      val min = List(heap1, heap2).flatMap { h => Try(findMin(h)).toOption.toList }.sorted.headOption
+      val meldedMin = Try(findMin(meld(heap1, heap2))).toOption
+      meldedMin == min
   }
 }
