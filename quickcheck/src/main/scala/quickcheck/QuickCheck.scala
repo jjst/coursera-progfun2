@@ -20,6 +20,14 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
 
   implicit lazy val arbHeap: Arbitrary[H] = Arbitrary(genHeap)
 
+  def popAll(heap: H): List[A] = {
+    if(isEmpty(heap)) {
+      Nil
+    } else {
+      findMin(heap) :: popAll(deleteMin(heap))
+    }
+  }
+
   property("gen1") = forAll { (h: H) =>
     val m = if (isEmpty(h)) 0 else findMin(h)
     findMin(insert(m, h)) == m
@@ -46,14 +54,11 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
   }
 
   property("constantly finding and deleting the minima should give sorted list") = forAll { heap: H =>
-    def popAll(heap: H): List[A] = {
-      if(isEmpty(heap)) {
-        Nil
-      } else {
-        findMin(heap) :: popAll(deleteMin(heap))
-      }
-    }
     val elems = popAll(heap)
     elems == elems.sorted
+  }
+
+  property("melded heaps should give back elements from 2 original lists") = forAll { (h1: H, h2: H) =>
+    popAll(meld(h1, h2)) == (popAll(h1) ++ popAll(h2)).sorted
   }
 }
