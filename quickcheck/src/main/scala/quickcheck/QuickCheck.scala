@@ -40,7 +40,7 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
   }
 
   property("deleting minimum from one-element heap should result in empty heap") = forAll { (elem: Int) =>
-    isEmpty(deleteMin(insert(elem, empty))) == true
+    isEmpty(deleteMin(insert(elem, empty)))
   }
 
   property("constantly finding and deleting the minima should give sorted list") = forAll { heap: H =>
