@@ -13,7 +13,7 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
 
   lazy val genNonEmptyHeap: Gen[H] = for {
     v <- arbitrary[A]
-    heap <- oneOf(genEmptyHeap, genEmptyHeap)
+    heap <- oneOf(genEmptyHeap, genNonEmptyHeap)
   } yield insert(v, heap)
 
   lazy val genHeap: Gen[H] = oneOf(genEmptyHeap, genNonEmptyHeap)
