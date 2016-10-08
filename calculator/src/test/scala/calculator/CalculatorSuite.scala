@@ -51,12 +51,54 @@ class CalculatorSuite extends FunSuite with ShouldMatchers {
     assert(resultRed2() == "red")
   }
 
-  test("normal computation") {
+  test("literal") {
     val expressions = Map[String, Signal[Expr]](
       "a" -> Signal { Literal(1) }
     )
     val res = Calculator.computeValues(expressions)
     res("a")() shouldBe 1
+  }
+
+  test("plus") {
+    val expressions = Map[String, Signal[Expr]](
+      "a" -> Signal { Plus(Literal(1),Literal(1)) }
+    )
+    val res = Calculator.computeValues(expressions)
+    res("a")() shouldBe 2
+  }
+
+  test("minus") {
+    val expressions = Map[String, Signal[Expr]](
+      "a" -> Signal { Minus(Literal(1),Literal(1)) }
+    )
+    val res = Calculator.computeValues(expressions)
+    res("a")() shouldBe 0
+  }
+
+  test("times") {
+    val expressions = Map[String, Signal[Expr]](
+      "a" -> Signal { Times(Literal(2),Literal(4)) }
+    )
+    val res = Calculator.computeValues(expressions)
+    res("a")() shouldBe 8
+  }
+
+  test("divide") {
+    val expressions = Map[String, Signal[Expr]](
+      "a" -> Signal { Divide(Literal(4),Literal(2)) }
+    )
+    val res = Calculator.computeValues(expressions)
+    res("a")() shouldBe 2
+  }
+
+  test("existing reference") {
+    val expressions = Map[String, Signal[Expr]](
+      "a" -> Signal { Literal(1) },
+      "b" -> Signal { Ref("a") }
+    )
+    val res = Calculator.computeValues(expressions)
+    res("a")() shouldBe 1
+    res("b")() shouldBe 1
   }
 
   test("non-existing reference") {
@@ -75,4 +117,16 @@ class CalculatorSuite extends FunSuite with ShouldMatchers {
     res("a")().isNaN shouldBe true
   }
 
+  test("update after cyclic reference") {
+    val a: Var[Expr] = Var { Plus(Ref("a"), Literal(1)) }
+    val expressions = Map[String, Signal[Expr]](
+      "a" -> a
+    )
+    val res = Calculator.computeValues(expressions)
+    res("a")().isNaN shouldBe true
+
+    a() = Literal(2)
+    val res2 = Calculator.computeValues(expressions)
+    res2("a")() shouldBe 2
+  }
 }

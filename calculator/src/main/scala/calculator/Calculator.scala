@@ -21,7 +21,7 @@ object Calculator {
       case Literal(value) => value
       case Ref(name) => eval(getReferenceExpr(name, references), references - name)
       case Plus(a, b) => e(a) + e(b)
-      case Minus(a, b) => e(a) + e(b)
+      case Minus(a, b) => e(a) - e(b)
       case Times(a, b) => e(a) * e(b)
       case Divide(a, b) => e(a) / e(b)
     }
